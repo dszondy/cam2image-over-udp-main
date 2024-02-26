@@ -1,0 +1,7 @@
+users:
+- default
+- name: ubuntu
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  groups: users, admin
+  ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINXjdMuaj3GMZcaeidFVyTEC5EhPyCJ+kAFMrQElnY0q szond@DESKTOP-DJ0B5U1
