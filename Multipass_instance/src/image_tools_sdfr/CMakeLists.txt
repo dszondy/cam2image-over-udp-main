@@ -24,6 +24,8 @@ add_library(${PROJECT_NAME} SHARED
   src/cv_mat_sensor_msgs_image_type_adapter.cpp
   src/showimage.cpp
   src/brightness.cpp
+  src/SequenceController.cpp
+  src/light_follow_controller.cpp
 )
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE "IMAGE_TOOLS_BUILDING_DLL")
@@ -39,6 +41,9 @@ target_link_libraries(${PROJECT_NAME}
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "image_tools_sdfr::Cam2Image" EXECUTABLE cam2image)
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "image_tools_sdfr::ShowImage" EXECUTABLE showimage)
 rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "image_tools_sdfr::Brightness" EXECUTABLE brightness)
+rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "image_tools_sdfr::SequenceControllerNode" EXECUTABLE sequence_contoller)
+rclcpp_components_register_node(${PROJECT_NAME} PLUGIN "image_tools_sdfr::LightFollowControllerNode" EXECUTABLE light_follow_controller)
+
 
 install(
   TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
