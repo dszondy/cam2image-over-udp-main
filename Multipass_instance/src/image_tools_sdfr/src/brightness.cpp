@@ -92,7 +92,7 @@ namespace image_tools_sdfr {
         IMAGE_TOOLS_SDFR_LOCAL
         void parse_parameters() {
             // Declare and get remaining parameters
-            threashold_ = this->declare_parameter("threashold", 10);
+            threashold_ = this->declare_parameter("threashold", 250);
             show_image_ = this->declare_parameter("show_image", true);
             window_name_ = this->declare_parameter("window_name", "");
         }
@@ -123,7 +123,7 @@ namespace image_tools_sdfr {
                 }
 
                 double average_brightness = cv::mean(grayscale_frame)[0];
-                bool light = average_brightness > threashold_; // abra cabra
+                bool light = average_brightness > threashold_;
 
                 // Log the average brightness
                 RCLCPP_INFO(logger, "Average brightness: %f", average_brightness);
@@ -135,9 +135,9 @@ namespace image_tools_sdfr {
                 pub_->publish(message);
 
                 // Apply Threshold for Light Detection
-                int threshold_value = 250; // Adjust this as needed
+                //int threshold_value = 250; // Adjust this as needed
                 cv::Mat thresholded_frame;
-                cv::threshold(grayscale_frame, thresholded_frame, threshold_value, 255, cv::THRESH_BINARY);
+                cv::threshold(grayscale_frame, thresholded_frame, threashold_, 255, cv::THRESH_BINARY);
 
                 std::vector<std::vector<cv::Point>> contours;
                 cv::findContours(thresholded_frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
