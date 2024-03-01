@@ -19,6 +19,7 @@
 #include "image_tools_sdfr/visibility_control.h"
 
 #include "./policy_maps.hpp"
+#include <vector>
 
 RCLCPP_USING_CUSTOM_TYPE_AS_ROS_MESSAGE_TYPE(
         image_tools_sdfr::ROSCvMatContainer,
@@ -138,37 +139,26 @@ namespace image_tools_sdfr {
                 cv::Mat thresholded_frame;
                 cv::threshold(grayscale_frame, thresholded_frame, threshold_value, 255, cv::THRESH_BINARY);
 
-                // Find Light Position (COG)
-                cv::Moments moments = cv::moments(thresholded_frame);
-                double m10 = moments.m10;
-                double m01 = moments.m01;
-                double area = moments.m00;
+                std::vector<std::vector<cv::Point>> contours;
+                cv::findContours(thresholded_frame, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
-                int posX = -1;
-                int posY = -1;
-                if (area > 1000.0) // Filter based on minimum light area
+                if(contours.size() > 0)
                 {
-                    posX = m10 / area;
-                    posY = m01 / area;
-
+                    auto c = max_element(contours.begin(), contours.end(), [](const std::vector<cv::Point>& a, const std::vector<cv::Point>& b) {
+                        return a.size() < b.size();
+                    });
+                    auto mu = cv::moments(*c, false);
+                    auto mc = cv::Point2f(mu.m10/mu.m00, mu.m01/mu.m00);
 
                     cv::Mat rgb_frame;
                     cv::cvtColor(thresholded_frame, rgb_frame, cv::COLOR_GRAY2BGR);
-                    cv::circle(rgb_frame, cv::Point(posX, posY), 5, cv::Scalar(255, 0, 255), cv::FILLED, 8, 0);
+                    cv::circle(rgb_frame, mc, 5, cv::Scalar(255, 0, 255), cv::FILLED, 8, 0);
 
-                    // Show the image in a window
-                    // cv::imshow(window_name_, grayscale_frame);
                     cv::imshow(window_name_, rgb_frame);
-                    // Draw the screen and wait for 1 millisecond.
-                    
-                    //int image_width = container.cv_mat().cols;
-                    //int image_height = container.cv_mat().rows;
-                    // Scale the position to the range [-1, 1] for easy use fro control
-                    //double scaled_posX = ((double)posX / (double)image_width) * 2.0 - 1.0;
-                    //double scaled_posY = ((double)posY / (double)image_height) * 2.0 - 1.0;
                     geometry_msgs::msg::Point point;
-                    point.x = posX;
-                    point.y = posY;
+
+                    point.x = mc.x;
+                    point.y = mc.y;
                     point.z = 0;
 
                     pos_pub_->publish(point);

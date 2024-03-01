@@ -60,6 +60,15 @@ namespace image_tools_sdfr
                 waypoint.twist.linear.x = speed;
                 // calculate the angular velocity in radians based on message x that is in range [-1, 1]
                 waypoint.twist.angular.z = (camera_pose->point.x - msg.x)/10 * M_PI_4;
+
+                if (waypoint.twist.angular.z > 2)
+                {
+                    waypoint.twist.angular.z = 2;
+                }
+                else if (waypoint.twist.angular.z < -2)
+                {
+                    waypoint.twist.angular.z = -2;
+                }
                 // log
                 RCLCPP_INFO(this->get_logger(), "Angular velocity: %f", waypoint.twist.angular.z);
 
