@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Launch cam2image node with parameters -->
+    <node pkg="image_tools_sdfr" exec="cam2image" name="cam2image" output="screen">
+        <param from="cam2image.yaml"/>
+    </node>
+
+    <!-- Launch light_follow_controller node -->
+    <node pkg="image_tools_sdfr" exec="light_follow_controller" name="light_follow_controller" output="screen">
+    </node>
+
+    <!-- Launch brightness node -->
+    <node pkg="image_tools_sdfr" exec="brightness" name="brightness" output="screen">
+    </node>
+
+    <!-- Launch RELbot_simulator with twist command enabled -->
+    <node pkg="RELbot_simulator" exec="RELbot_simulator" name="RELbot_simulator" output="screen">
+        <param name="use_twist_cmd" value="true"/>
+    </node>
+</launch>
