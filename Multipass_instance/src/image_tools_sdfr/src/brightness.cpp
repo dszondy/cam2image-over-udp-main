@@ -222,14 +222,14 @@ namespace image_tools_sdfr {
                     cv::imshow(window_name_, rgb_frame);
                     // Draw the screen and wait for 1 millisecond.
                     
-                    int image_width = container.cv_mat().cols;
-                    int image_height = container.cv_mat().rows;
+                    //int image_width = container.cv_mat().cols;
+                    //int image_height = container.cv_mat().rows;
                     // Scale the position to the range [-1, 1] for easy use fro control
-                    double scaled_posX = ((double)posX / (double)image_width) * 2.0 - 1.0;
-                    double scaled_posY = ((double)posY / (double)image_height) * 2.0 - 1.0;
+                    //double scaled_posX = ((double)posX / (double)image_width) * 2.0 - 1.0;
+                    //double scaled_posY = ((double)posY / (double)image_height) * 2.0 - 1.0;
                     geometry_msgs::msg::Point point;
-                    point.x = scaled_posX;
-                    point.y = scaled_posY;
+                    point.x = posX;
+                    point.y = posY;
                     point.z = 0;
 
                     pos_pub_->publish(point);

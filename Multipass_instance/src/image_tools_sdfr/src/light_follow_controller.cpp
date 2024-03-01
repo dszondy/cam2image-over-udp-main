@@ -40,27 +40,37 @@ namespace image_tools_sdfr
                                                                         {
                                                                             this->callback(*msg);
                                                                         });
+            camera_pose_sub_ = this->create_subscription<geometry_msgs::msg::PointStamped>("output/camera_position", 10,
+            [this](const geometry_msgs::msg::PointStamped::SharedPtr camera_pose)
+            {
+                this->camera_pose = camera_pose;
+            });
+
             RCLCPP_INFO(this->get_logger(), "Subscibed to light_pos");
         }
 
         void callback(const geometry_msgs::msg::Point msg)
         {
-            // log
-            RCLCPP_INFO(this->get_logger(), "Received light position: x=%f, y=%f", msg.x, msg.y);
-            // Create a new waypoint command
-            geometry_msgs::msg::TwistStamped waypoint;
-            double speed = 0.2;
-            waypoint.twist.linear.x = speed;
-            // calculate the angular velocity in radians based on message x that is in range [-1, 1]
-            waypoint.twist.angular.z = msg.x * M_PI_4;
-            // log
-            RCLCPP_INFO(this->get_logger(), "Angular velocity: %f", waypoint.twist.angular.z);
+            if(this->camera_pose != nullptr) {
+                // log
+                RCLCPP_INFO(this->get_logger(), "Received light position: x=%f, y=%f", msg.x, msg.y);
+                // Create a new waypoint command
+                geometry_msgs::msg::TwistStamped waypoint;
+                double speed = 0.0;
+                waypoint.twist.linear.x = speed;
+                // calculate the angular velocity in radians based on message x that is in range [-1, 1]
+                waypoint.twist.angular.z = (camera_pose->point.x - msg.x)/10 * M_PI_4;
+                // log
+                RCLCPP_INFO(this->get_logger(), "Angular velocity: %f", waypoint.twist.angular.z);
 
-            publisher_->publish(waypoint);
+                publisher_->publish(waypoint);
+            }
         }
 
         rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr sub_;
         rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr publisher_;
+        geometry_msgs::msg::PointStamped::SharedPtr camera_pose;
+        rclcpp::Subscription<geometry_msgs::msg::PointStamped>:: SharedPtr camera_pose_sub_;
     };
 } // namespace image_tools_sdfr
 RCLCPP_COMPONENTS_REGISTER_NODE(image_tools_sdfr::LightFollowControllerNode);

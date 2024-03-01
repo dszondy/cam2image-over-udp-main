@@ -25,36 +25,20 @@ namespace image_tools_sdfr
 
             // Simple waypoints for a square
             waypoints_.push_back(geometry_msgs::msg::TwistStamped()); // Default initialization
-            waypoints_.back().twist.linear.x = speed_;               // Set linear.x
-            /*waypoints_.push_back(geometry_msgs::msg::TwistStamped());
-            waypoints_.back().twist.angular.z = M_PI_2; // Set angular.z
-
-            waypoints_.push_back(geometry_msgs::msg::TwistStamped()); // Default initialization
-            waypoints_.back().twist.linear.x = speed_;               // Set linear.x
+            waypoints_.back().twist.linear.x = speed_;               // GO
             waypoints_.push_back(geometry_msgs::msg::TwistStamped());
-            waypoints_.back().twist.angular.z = M_PI_2; // Set angular.z
+            waypoints_.back().twist.linear.x = 0;               // Stop
 
-            waypoints_.push_back(geometry_msgs::msg::TwistStamped()); // Default initialization
-            waypoints_.back().twist.linear.x = speed_;               // Set linear.x
-            waypoints_.push_back(geometry_msgs::msg::TwistStamped());
-            waypoints_.back().twist.angular.z = M_PI_2; // Set angular.z
 
-            waypoints_.push_back(geometry_msgs::msg::TwistStamped()); // Default initialization
-            waypoints_.back().twist.linear.x = speed_;               // Set linear.x
-            waypoints_.push_back(geometry_msgs::msg::TwistStamped());
-            waypoints_.back().twist.angular.z = M_PI_2; // Set angular.z
-            */
             // Publisher for velocity commands
             publisher_ = this->create_publisher<geometry_msgs::msg::TwistStamped>("/input/cmd_vel", 10);
             RCLCPP_INFO(this->get_logger(), "Publishing waypoint command to /input/cmd_vel");
 
             // Use a timer for publishing at a regular rat
             //double move_duration = distance / speed_;  // In secondse
-            /*timer_ = this->create_wall_timer(
-                std::chrono::milliseconds(1000),
+            timer_ = this->create_wall_timer(
+                std::chrono::milliseconds(5000), // 5 sec --> 5 sec* 5m/s = 5m
                 std::bind(&SequenceControllerNode::timer_callback, this));
-            */
-            publisher_->publish(waypoints_[waypoint_index_]);
         }
 
     private:
@@ -71,7 +55,7 @@ namespace image_tools_sdfr
             // Check if we've completed all waypoints (adjust logic if needed)
             if (waypoint_index_ == 0)
             {
-                RCLCPP_INFO(this->get_logger(), "Square trajectory completed!");
+                RCLCPP_INFO(this->get_logger(), "Trajectory completed!");
             }
         }
 
